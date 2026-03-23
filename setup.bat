@@ -13,15 +13,14 @@ echo.
 REM ── 1. Check prerequisites ──────────────────────────
 echo [1/4] Checking prerequisites...
 
-where python >nul 2>&1
+where py >nul 2>&1
 if %errorlevel% neq 0 (
     echo X python not found.
-    echo   Download from https://www.python.org/downloads/
-    echo   IMPORTANT: Check "Add Python to PATH" during install!
+    echo   Run: winget install Python.Python.3.13
     pause
     exit /b 1
 )
-python --version
+py --version
 
 where node >nul 2>&1
 if %errorlevel% neq 0 (
@@ -61,7 +60,7 @@ if not exist .env (
 REM ── 3. Install backend dependencies ─────────────────
 echo [3/4] Installing Python backend dependencies...
 cd backend
-python -m pip install -r requirements.txt --quiet
+py -m pip install -r requirements.txt
 cd ..
 echo   Done.
 
@@ -81,7 +80,7 @@ echo To start the app, open TWO Command Prompt windows:
 echo.
 echo   Window 1 (Backend):
 echo     cd backend
-echo     python -m uvicorn main:app --reload --port 8000
+echo     py -m uvicorn main:app --reload --port 8000
 echo.
 echo   Window 2 (Frontend):
 echo     cd frontend

@@ -30,22 +30,27 @@ export default function App() {
       setLoading(true);
       setError("");
       try {
-        const [qRes, tRes] = await Promise.all([
-          fetch(`${API}/quote?symbol=${s}`),
-          fetch(`${API}/timeseries?symbol=${s}&interval=${i}`),
-        ]);
+        // Fetch quote first
+        const qRes = await fetch(`${API}/quote?symbol=${s}`);
         if (!qRes.ok) {
           const err = await qRes.json();
           throw new Error(err.detail || "Failed to fetch quote");
         }
+        const qData = await qRes.json();
+        setQuote(qData);
+        setSymbol(s);
+
+        // Wait 1.5s to avoid Alpha Vantage rate limit (1 req/sec on free tier)
+        await new Promise((r) => setTimeout(r, 1500));
+
+        // Then fetch time series
+        const tRes = await fetch(`${API}/timeseries?symbol=${s}&interval=${i}`);
         if (!tRes.ok) {
           const err = await tRes.json();
           throw new Error(err.detail || "Failed to fetch time series");
         }
-        const [qData, tData] = await Promise.all([qRes.json(), tRes.json()]);
-        setQuote(qData);
+        const tData = await tRes.json();
         setTimeseries(tData.reverse());
-        setSymbol(s);
       } catch (e) {
         setError(e.message);
       } finally {
